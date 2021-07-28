@@ -1,0 +1,113 @@
+{% extends "title_base.html"  %}
+{% block title  %}
+{% load static %}
+<link type="image/x-icon" rel="shortcut icon" href="{% static "favicon.ico" %}">
+<link type="text/css" rel="stylesheet" href="{% static "css/common.css" %}">
+<link type="text/css" rel="stylesheet" href="{% static "css/ranking.css" %}">
+    <style type="text/css">
+    #ShoppingCartTable{
+    border-collapse: collapse;
+    width:100%;
+    border:1px solid #c6c6c6 !important;
+    margin-bottom:20px;
+    align="center"
+    }
+    th{
+    border-collapse: collapse;
+    border-right:1px solid #c6c6c6 !important;
+    border-bottom:1px solid #c6c6c6 !important;
+    background-color:#30C37E !important;
+    padding:5px 9px;
+    font-size:14px;
+    font-weight:normal;
+    text-align:center;
+    }
+     td{
+    border-collapse: collapse;
+    border-right:1px solid #c6c6c6 !important;
+    border-bottom:1px solid #c6c6c6 !important;
+    padding:5px 9px;
+    font-size:12px;
+    font-weight:normal;
+    text-align:center;
+    word-break: break-all;
+    }
+     #searchForm{float: right}
+    #degreesearchbutton{width:100px;height:35px;border:0 none;background-color:#30C37E;color:#fff;font:16px/34px 'Microsoft YaHei';}
+    #degreesearchtext{float:left;width:200px;height:31px;border:2px solid #30C37E;font:14px/20px 'Microsoft YaHei';color:#999}
+    </style>
+</head>
+<body>
+<div class="header">
+        <a href="/" class="logo" title="Home Page"><img alt="Book Store" src="{% static "image/logo.png" %}"></a>
+        <div class="search-box">
+            <form id="searchForm" action="{% url 'search' 1 %}" method="post" target="_blank">
+            {% csrf_token %}
+                <div class="search-keyword">
+                    <input name="kword" type="text" class="keyword" maxlength="120"  placeholder="Enter to seach"  />
+                </div>
+                <input id="subSerch" type="submit" class="search-button" value="Search" />
+            </form>
+            <div id="suggest" class="search-suggest"></div>
+            <div class="search-hot-words">
+                {% for book in search_book  %}
+                <a target="play" href="{% url 'play' book.book.book_id %}" >{{ book.book.book_name }}</a>
+                {% endfor  %}
+            <div id = "username">
+                {{username}}
+            </div>
+            </div>
+        </div>
+    </div><!--end header-->
+    <div class="nav-box">
+		<div class="nav-box-inner">
+			<ul class="nav clearfix">
+                <li><a href="/">Home Page</a></li>
+				<li><a href="{% url 'order1'  %}">Recommend</a></li>
+	    	    <li><a href="{% url 'home' 1 %}" target="_blank">User Profile</a></li>
+			</ul>
+		</div>
+	</div><!--end nav-box-->
+    <div class="wrapper clearfix">
+    <!-- left side bar -->
+
+
+
+     <div class="wrapper clearfix" id="wrapper">
+	<div class="main">
+		<div class="main-head-box clearfix">
+			<div class="main-head"><h1>Search Result</h1></div>
+            <form id="searchForm" method="post" target="_blank">
+            {% csrf_token %}
+                <div class="search-keyword">
+                    <input id ="degreesearchtext" name="kword" type="text" class="keyword" maxlength="120"  placeholder="Degree Search"  />
+                    <input id="degreesearchbutton" type="submit" class="search-button" value="Search" />
+                </div>
+
+            </form>
+		</div>
+    </br>
+        <table border="1" width="650px" id="ShoppingCartTable" name = "ShoppingCartTable">
+                        <thead>
+                                <tr width="650px">
+                                <th width="150px">Author Name 1</th>
+                                <th width="150px">Author Name 2</th>
+                                <th width="150px">Degree</th>
+                                </tr>
+                        </thead>
+                        <tbody id="goods">
+                        {%for author in degree %}
+                                <tr width="650px">
+                                <td width="150px">{{author.author_author1}}</td>
+                                <td width="150px">{{author.author_author2}}</td>
+                                <td width="150px" align="center">{{ author.author_degree }}</td>
+                                </tr>
+                       {%endfor %}
+                        </tbody>
+                </table>
+	</div>
+    </div>
+  </div><!--end wrapper-->
+    <!--footer-->
+    <script data-main="{% static "js/ranking.js" %}" src="{% static "js/require.js" %}"></script>
+{% endblock  %}

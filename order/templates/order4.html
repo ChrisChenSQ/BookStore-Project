@@ -1,0 +1,86 @@
+{% extends "title_base.html"  %}
+<!--这是直接下单的html-->
+{% block title  %}
+{% load static %}
+<link type="image/x-icon" rel="shortcut icon" href="{% static "favicon.ico" %}">
+<link type="text/css" rel="stylesheet" href="{% static "css/common.css" %}">
+<link type="text/css" rel="stylesheet" href="{% static "css/play.css" %}">
+
+</head>
+    <style type="text/css">
+    #PlaceOrderButton{width:100px;height:35px;border:0 none;background-color:#30C37E;color:#fff;font:16px/34px 'Microsoft YaHei';}
+    #OrderNumberEnter{float:left;width:200px;height:31px;border:2px solid #30C37E;font:14px/20px 'Microsoft YaHei';color:#999}
+    </style>
+<body>
+	<div class="header">
+		<a href="/" class="logo" title="Home Page"><img src="{% static "image/logo.png" %}"></a>
+		<div class="search-box">
+            <form id="searchForm" action="{% url 'search' 1 %}" method="post" target="_blank">
+            {% csrf_token %}
+            <div class="search-keyword">
+              <input id="kword" name="kword" type="text" class="keyword" maxlength="120" placeholder="Enter to search"  />
+            </div>
+            <input id="subSerch" type="submit" class="search-button" value="Search" />
+            </form>
+            <div id="suggest" class="search-suggest"></div>
+            <div class="search-hot-words">
+                {% for book in search_book  %}
+                <a target="play" href="{% url 'play' book.book_id %}" >{{ book.book_name }}</a>
+                {% endfor  %}
+            </div>
+		</div>
+	</div><!--end header-->
+	<div class="nav-box">
+		<div class="nav-box-inner">
+			<ul class="nav clearfix">
+				<li><a href="/">Home Page</a></li>
+				<li><a href="{% url 'order1'  %}">Recommend</a></li>
+	    	    <li><a href="{% url 'home' 1 %}" target="_blank">User Profile</a></li>
+			</ul>
+		</div>
+	</div><!--end nav-box-->
+	<div class="wrapper clearfix">
+        <div class="content">
+            <div class="product-detail-box clearfix">
+                <div class="product-pics">
+                    <div class="music_box">
+                        <div id="jquery_jplayer_1" class="jp-jplayer" data-url={% static "bookFile/" %}{{ book_info.book_author }}></div>
+                        <div class="jp_img layz_load pic_po" title="Book"><img data-src={% static "bookImg/" %}{{ book_info.book_img }}></div>
+                        
+                    </div><!--end music_box-->
+                    
+                </div><!--end product-pics-->
+                <div class="product-detail-main">
+                    <div class="product-price">
+                        <h1 id="currentBook" >{{ book_info.book_name }}</h1>
+                        <div class="product-price-info">
+                            <span>Author：{{ book_info.book_author }}</span>
+                        </div>
+                        <div class="product-price-info">
+                            <span>Publisher：{{ book_info.book_publisher }}</span>
+                            <span>Rating：{{ book_info.book_avg_rating }}</span>
+                        </div>
+                        <div class="product-price-info">
+                            <span>Type：{{ book_info.book_type }}</span>
+                            <span>Publish Date：{{ book_info.book_pubdate }}</span>
+                        </div>
+                    </div><!--end product-price-->
+                    <div class="product-comment">
+                      <form id="searchForm" action="{% url 'order4' book_info.book_id  %}" method="post" target="_blank">
+                      {% csrf_token %}
+                      <div class="search-keyword">
+                      <input id="OrderNumberEnter" name="kint" type="text" class="keyword" maxlength="120" placeholder="Enter quantity"  />
+                      <input id="PlaceOrderButton" type="submit" class="search-button" value="Place Order" />
+                      </div>
+
+                   </form>
+                        
+                        
+                    </div><!-- end product-comment -->
+                </div><!-- end product-detail-main -->
+            </div><!-- end product-detail-box -->
+
+ 
+
+	<script data-main="{% static "js/play.js" %}" src="{% static "js/require.js" %}"></script>
+{% endblock  %}

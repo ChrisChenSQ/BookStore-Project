@@ -1,0 +1,174 @@
+{% extends "title_base.html"  %}
+{% block title  %}
+{% load static %}
+<link type="image/x-icon" rel="shortcut icon" href="{% static "favicon.ico" %}">
+<link type="text/css" rel="stylesheet" href="{% static "css/common.css" %}">
+<link type="text/css" rel="stylesheet" href="{% static "css/search.css" %}">
+
+</head>
+    <style type="text/css">
+    #OrderTableDiv{font:14px/20px 'Microsoft YaHei'}
+    #OrderTable{
+    border-collapse: collapse;
+    width:100%;
+    border:1px solid #c6c6c6 !important;
+    margin-bottom:20px;
+    align="center"
+    }
+    th{
+    border-collapse: collapse;
+    border-right:1px solid #c6c6c6 !important;
+    border-bottom:1px solid #c6c6c6 !important;
+    background-color:#30C37E !important;
+    padding:5px 9px;
+    font-size:14px;
+    font-weight:normal;
+    text-align:center;
+    }
+     td{
+    border-collapse: collapse;
+    border-right:1px solid #c6c6c6 !important;
+    border-bottom:1px solid #c6c6c6 !important;
+    padding:5px 9px;
+    font-size:12px;
+    font-weight:normal;
+    text-align:center;
+    word-break: break-all;
+    }
+
+    </style>
+<body>
+    <div class="header">
+        <a href="/" class="logo" title="Home Page"><img alt="Book Store" src="{% static "image/logo.png" %}"></a>
+        <div class="search-box">
+            <form id="searchForm" action="{% url 'search' 1 %}" method="post" target="_blank">
+                {% csrf_token %}
+                <div class="search-keyword">
+                    <input id="kword" name="kword" type="text" class="keyword" maxlength="120" placeholder="Enter to search"  />
+                </div>
+                <input id="subSerch" type="submit" class="search-button" value="Search" />
+            </form>
+            <div id="suggest" class="search-suggest"></div>
+            <div class="search-hot-words">
+                {% for book in search_book  %}
+                    <a target="play" href="{% url 'play' book.book_id %}" >{{ book.book_name }}</a>
+                {% endfor  %}
+            </div>
+        </div>
+    </div><!--end header-->
+    <div class="nav-box">
+		<div class="nav-box-inner">
+			<ul class="nav clearfix">
+                <li><a href="/">Home Page</a></li>
+				<li><a href="{% url 'order1'  %}">Recommend</a></li>
+	    	    <li><a href="{% url 'home' 1 %}" target="_blank">User Profile</a></li>
+			</ul>
+		</div>
+	</div><!--end nav-box-->
+<!--wrapper-->
+    <div class="wrapper clearfix" id="OrderTableDiv" >
+          <table border="1" width="650px" id="OrderTable">
+                        <thead>
+                                <tr width="750px">
+                                <th width="1000px">Book Title</th>
+                                <th width="150px">Price</th>
+                                <th width="150px">Quantity</th>
+                                <th width="150px">Total Price</th>
+                                <th width="50px">User</th>
+                                </tr>
+                        </thead>
+                        <tbody id="goods">
+                                <tr width="750px">
+                                <td width="250px">{{book_info.book_name}}</td>
+                                <td width="150px">{{book_info.book_price}}</td>
+                                <td width="150px">{{kint}}</td>
+                                <td width="150px">{{total}}</td>
+                                <td width="50px">{{name}}</td>
+                                </td>
+                                </tr>
+                        </tbody>
+                        <tfoot>
+                                <tr>
+                                        <td colspan="2" align="center">Total Price</td>
+                                        <td id="total" colspan="3" align="center">dollar$:{{total}}</td>
+
+                                </tr>
+                        </tfoot>
+                </table>
+    </div><!--end wrapper-->
+    <!--footer-->
+
+<script type="text/javascript">
+                //this
+                function add_shoppingcar(btn){
+                        var tr=btn.parentNode.parentNode;
+                        var tds=tr.getElementsByTagName("td");
+                        var name=tds[0].innerHTML;
+                        var price=tds[1].innerHTML;
+                        var tbody=document.getElementById("goods");
+                        var row=tbody.insertRow();//insertRow表格开头插入新行
+                        row.innerHTML="<td>"+name+"</td>"+
+                "<td>"+price+"</td>"+
+                "<td align='center'>"+
+                "<input type='button' value='-' id='jian'  onclick='change(this,-1)'  />"+
+                "<input id='text' type='text' size='1' value='1' readonly='readonly' />"+
+                "<input type='button' value='+' id='add'  onclick='change(this,1)'  />"+
+                "</td>"+
+                "<td>"+price+"</td>"+
+                "<td align='center'>"+
+                        "<input type='button' value='X' onclick='del(this)'/>"+
+                "</td>"+
+                "</tr>"
+                total();
+                }
+                // add change
+                function change(btn,n){
+                // get parent
+                var inputs = btn.parentNode.getElementsByTagName("input");
+                //
+                var amount = parseInt(inputs[1].value);
+                //当amount=1时不能再点击"-"符号
+                //用n<0来表示点击了减button
+                if(amount<=1 && n<0){
+                        return;
+                }
+                //根据加减来改变数量
+                inputs[1].value = amount + n;
+                //将改变后的数量值赋值给amount
+                amount = inputs[1].value;
+                //获取表格中的行
+                var tr = btn.parentNode.parentNode;
+                //获取所有的列
+                var tds = tr.getElementsByTagName("td");
+                //获取单价
+                var price = parseFloat(tds[1].innerHTML);
+                //总价=单价*数量
+                var m = price * amount;
+                //将总价赋值给相应的位置
+                tds[3].innerHTML = m;
+                //调用total方法，求总计
+                total();
+        }
+
+
+                function total(){
+                        var tbody=document.getElementById("goods");
+                        var trs=tbody.getElementsByTagName("tr");
+                        var sum=0;
+                        for(var i=0;i<trs.length;i++){
+                                var tds=trs[i].getElementsByTagName("td");
+                                var m=tds[3].innerHTML;
+                                sum += parseFloat(m);
+                        }
+                        var total=document.getElementById("total");
+                        total.innerHTML = sum;
+                }
+                function del(i){
+                        var tr=i.parentNode.parentNode;
+                        tr.parentNode.removeChild(tr);
+                        //tr.remove(tr);
+                        total();
+                }
+        </script>
+
+{% endblock  %}

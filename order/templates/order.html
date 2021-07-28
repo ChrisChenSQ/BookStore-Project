@@ -1,0 +1,181 @@
+{% extends "title_base.html"  %}
+{% block title  %}
+{% load static %}
+<link type="image/x-icon" rel="shortcut icon" href="{% static "favicon.ico" %}">
+<link type="text/css" rel="stylesheet" href="{% static "css/common.css" %}">
+<link type="text/css" rel="stylesheet" href="{% static "css/search.css" %}">
+
+</head>
+    <style type="text/css">
+    #ShoppingCartTable{
+    border-collapse: collapse;
+    width:100%;
+    border:1px solid #c6c6c6 !important;
+    margin-bottom:20px;
+    align="center"
+    }
+    th{
+    border-collapse: collapse;
+    border-right:1px solid #c6c6c6 !important;
+    border-bottom:1px solid #c6c6c6 !important;
+    background-color:#30C37E !important;
+    padding:5px 9px;
+    font-size:14px;
+    font-weight:normal;
+    text-align:center;
+    }
+     td{
+    border-collapse: collapse;
+    border-right:1px solid #c6c6c6 !important;
+    border-bottom:1px solid #c6c6c6 !important;
+    padding:5px 9px;
+    font-size:12px;
+    font-weight:normal;
+    text-align:center;
+    word-break: break-all;
+    }
+     #jian{width:40px;height: 18px}
+     #add{width:40px;height: 18px}
+     #delete{width:40px;height: 18px}
+     #PlaceCartButton{width:100px;height:35px;border:0 none;background-color:#30C37E;color:#fff;font:16px/34px 'Microsoft YaHei';float: right}
+    </style>
+<body>
+    <div class="header">
+        <a href="/" class="logo" title="Home Page"><img alt="Book Store" src="{% static "image/logo.png" %}"></a>
+        <div class="search-box">
+            <form id="searchForm" action="{% url 'search' 1 %}" method="post" target="_blank">
+                {% csrf_token %}
+                <div class="search-keyword">
+                    <input id="kword" name="kword" type="text" class="keyword" maxlength="120" placeholder="Enter to search"  />
+                </div>
+                <input id="subSerch" type="submit" class="search-button" value="Search" />
+            </form>
+            <div id="suggest" class="search-suggest"></div>
+            <div class="search-hot-words">
+                {% for book in search_book  %}
+                    <a target="play" href="{% url 'play' book.book_id %}" >{{ book.book_name }}</a>
+                {% endfor  %}
+            </div>
+        </div>
+    </div><!--end header-->
+    <div class="nav-box">
+		<div class="nav-box-inner">
+			<ul class="nav clearfix">
+                <li><a href="/">Home Page</a></li>
+				<li><a href="{% url 'order1'  %}">Recommend</a></li>
+	    	    <li><a href="{% url 'home' 1 %}" target="_blank">User Profile</a></li>
+			</ul>
+		</div>
+	</div><!--end nav-box-->
+<!--wrapper-->
+    <div class="wrapper clearfix" id="wrapper">
+          <table border="1" width="650px" id="ShoppingCartTable" name = "ShoppingCartTable">
+                        <thead>
+                                <tr width="650px">
+                                <th width="150px">Book Title</th>
+                                <th width="150px">Price</th>
+                                <th width="150px">Quantity</th>
+                                <th width="150px">Total Price</th>
+                                <th width="50px">Delete</th>
+                                </tr>
+                        </thead>
+                        <tbody id="goods">
+                        {%for list in book_info %}
+                                <tr width="650px">
+                                <td width="150px">{{list.cart_booktitle}}</td>
+                                <td width="150px">{{list.cart_bookprice}}</td>
+                                <td width="150px" align="center">
+                                  <a href="{% url 'orderminus' list.cart_id list.cart_bookid %}" target="_self"><input type="button" value="-" id="jian" /></a>
+                                        <input id="text1" type="text" size="1" value={{list.cart_quantity}}  />
+                                      <a href="{% url 'orderadd' list.cart_id list.cart_bookid %}" target="_self"><input type="button" value="+" id="add" ;"/></a>
+                                </td>
+                                <td width="150px">{{list.total}}</td>
+                                <td width="150px" align="center">
+                                      <a href="{% url 'orderdelete' list.cart_id list.cart_bookid %}" target="_self"><input type="button" id = "delete" value="X"  /></a>
+                                </td>
+                                </tr>
+                       {%endfor %}
+                        </tbody>
+                        <tfoot>
+                                <tr>
+                                        <td colspan="3" align="center" >Total Price</td>
+                                        <td id="total">{{totalsum}}</td>
+                                        <td width="50px">$</td>
+                                </tr>
+                        </tfoot>
+                </table>
+        <a href="{% url 'orderplace'  %}" target="_blank"><input id="PlaceCartButton" type="button" class="Cart-button" value="Place Order" /></a>
+    </div><!--end wrapper-->
+    <!--footer-->
+<script src="{% static "js/jquery-3.5.0.min.js" %}"></script>
+<script type="text/javascript">
+                //add clcik
+                function change(btn,n){
+                //current clike element that belong to  parentnode
+                var inputs = btn.parentNode.getElementsByTagName("input");
+                //second row input
+                var amount = parseInt(inputs[1].value);
+                //amount=1 exception
+                //n<0 ,minus button
+                if(amount<=1 && n<0){
+                        return;
+                }
+                //amount +n
+                inputs[1].value = amount + n;
+                amount = inputs[1].value;
+                //get two parent node
+                var tr = btn.parentNode.parentNode;
+                //get price
+                var tds = tr.getElementsByTagName("td");
+                var price = parseFloat(tds[1].innerHTML);
+                var m = price * amount;
+                tds[3].innerHTML = m;
+                total();
+                                   }
+
+
+                function total(){
+                        var tbody=document.getElementById("goods");
+                        var trs=tbody.getElementsByTagName("tr");
+                        var sum=0;
+                        for(var i=0;i<trs.length;i++){
+                                var tds=trs[i].getElementsByTagName("td");
+                                var m=tds[3].innerHTML;
+                                sum += parseFloat(m);
+                        }
+                        var total=document.getElementById("total");
+                        total.innerHTML = sum;
+                }
+                function del(i){
+                        var tr=i.parentNode.parentNode;
+                        tr.parentNode.removeChild(tr);
+                        //tr.remove(tr);
+                        total();
+                }
+    
+        
+            function  orderdone() {
+             var totala =document.getElementById("text1"); 
+             $("#PlaceCartButton1").click(function() {
+             const config ={
+                url: "/order/confirmorder.html",
+                async: true,
+                type: "get",
+                dataType: "json",
+                data: {
+                    quantity: totala,
+                    name:"cc",
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                success : function(json) {
+                    alert("Successfully sent the URL to Django");
+                },
+                error : function(json) {
+                    alert("I am Could not send URL to Django. Error");
+                }
+                      };
+               $.ajax(config);
+                         });
+                         }
+        </script>
+{% endblock  %}

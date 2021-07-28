@@ -1,0 +1,137 @@
+{% extends "title_base.html"  %}
+{% block title  %}
+{% load static %}
+<link type="image/x-icon" rel="shortcut icon" href="{% static "favicon.ico" %}">
+<link type="text/css" rel="stylesheet" href="{% static "css/common.css" %}">
+<link type="text/css" rel="stylesheet" href="{% static "css/index.css" %}">
+</head>
+
+<body class="index">
+	<div class="header">
+		<a href="/" class="logo" title="Home Page"><img alt="Book Store" src="{% static "image/logo.png" %}"></a>
+		<div class="search-box">
+	    <form id="searchForm" action="{% url 'search' 1 %}" method="post" target="_blank">
+        {% csrf_token %}
+	        <div class="search-keyword">
+	            <input name="kword" type="text" class="keyword" maxlength="120" placeholder="Enter to search" />
+	        </div>
+	        <input id="subSerch" type="submit" class="search-button" value="Search" />
+	    </form>
+	    <div id="suggest" class="search-suggest"></div>
+  		<div class="search-hot-words">
+			{% for book in search_book  %}
+				<a target="play" href="{% url 'play' book.book.book_id %}" >{{ book.book.book_name }}</a>
+			{% endfor  %}
+  		</div>
+  	</div>
+	</div>
+	<div class="nav-box">
+    <div class="nav-box-inner">
+        <ul class="nav clearfix">
+            <li><a href="{% url 'ranking' %}">View all Books</a></li>
+            <li><a href="{% url 'order1'  %}">Recommend</a></li>
+            <li><a href="{% url 'home' 1 %}" target="_blank">User Profile</a></li>
+            <li><a href="{% url 'degree_search'  %}">Degree Search</a></li>
+        </ul>
+        <div class="category-nav">
+            <div class="category-nav-header">
+                <strong><a href="{% url 'ranking' %}">Book Catagory</a></strong>
+            </div>
+            <div class="category-nav-body">
+                <div id="J_CategoryItems" class="category-items">
+                {% for label in label_list  %}
+                    <div class="item" data-index="1"><h3>
+                        <a href="{% url 'ranking' %}?type={{ label }}" class="main-title">{{ label }}</a>
+                    </div>
+                {% endfor  %}
+                </div>
+            </div>
+        </div>
+    </div>
+	<div class="wrapper clearfix">
+		<div class="main">
+			<div id="J_FocusSlider" class="focus">
+				<div id="bannerLeftBtn" class="banner_btn"></div>
+				<ul class="focus-list f_w">
+                    <li class="f_s"><a target="play" href="{% url 'play' 12 %}" class="layz_load" >
+                        <img data-src="{% static '/image/datu-1.jpg' %}"  width="750" height="275"></a>
+                    </li>
+					<li class="f_s"><a target="play" href="{% url 'play' 13 %}" class="layz_load" >
+                        <img data-src="{% static '/image/datu-2.jpg' %}"  width="750" height="275"></a>
+                    </li>
+				</ul>
+				<div id="bannerRightBtn" class="banner_btn"></div>
+			</div>
+		</div>
+		<div class="aside">
+			<h2>Book</h2>
+			<ul>
+				{% for book in play_hot_book  %}
+					<li><span>{{ forloop.counter }}</span>
+                        <a target="play" href="{% url 'play' book.book.book_id %}" >{{ book.book.book_name }}</a>
+                    </li>
+				{% endfor  %}
+			</ul>
+		</div>
+	</div>
+	<div class="today clearfix">
+		<div class="today-header">
+            <i></i>
+			<h2>Book</h2>
+		</div>
+		<div class="today-list-box slide">
+			<div id="J_TodayRec" class="today-list">
+				<ul>
+                {% for list in daily_recommendation  %}
+                    {% if forloop.first  %}
+                        <li class="first">
+                    {% else  %}
+                        <li>
+                    {% endif  %}
+                    <a class="pic layz_load pic_po" target="play" href="{% url 'play' list.book_id %}" >
+                        <img data-src="{% static "bookImg/" %}{{ list.book_img }}"  ></a>
+                    <div class="name">
+                        <h3><a target="play" href="{% url 'play' list.book_id %}" >{{ list.book_name }}</a></h3>
+                        <div class="singer"><span>{{ list.book_singer }}</span></div>
+                        <div class="times">Pub Date：<span>{{ list.book_pubdate }}</span></div>
+                    </div>
+                    <a target="play" href="{% url 'play' list.book_id %}" class="today-buy-button" >Detail></a>
+                {% endfor  %}
+				</ul>
+			</div>
+		</div>
+	</div><!--end today-->
+	<div class="section">
+		<ul id="J_Tab" class="tab-trigger">
+	  	<li data-cur="0" class="current t_c">Hot Search</li>
+        <li data-cur="1" class="t_c">Top Sell</li>
+		</ul>
+		<div class="tab-container">
+	    <div id="J_Tab_Con" class="tab-container-cell">
+            {% for list in all_ranking  %}
+                {% if forloop.first %}
+                    <ul class="product-list clearfix t_s current">
+                {% else  %}
+                    <ul class="product-list clearfix t_s" style="display:none;">
+                {% endif  %}
+                    {% for books in list  %}
+                    <li>
+                        <a target="play" href="{% url 'play' books.book.book_id %}" class="pic layz_load pic_po" >
+                            <img data-src="{% static "bookImg/" %}{{ books.book.book_img }}" ></a>
+                        <h3><a target="play" href="{% url 'play' books.book.book_id %}" >{{ books.book.book_name }}</a></h3>
+                        <div class="singer"><span>{{ books.book.book_author }}</span></div>
+                        {% if all_ranking|first  == list %}
+                        <div class="times">Search time：<span>{{ books.dynamic_search }}</span></div>
+                        {% else %}
+                        <div class="times">Sell Amount：<span>{{ books.dynamic_down }}</span></div>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                    </ul>
+            {% endfor %}
+        </div>
+        </div>
+    </div><!--end section-->
+	</div>
+	<script data-main="{% static "js/index.js" %}" src="{% static "js/require.js" %}"></script>
+{% endblock  %}

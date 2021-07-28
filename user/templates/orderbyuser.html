@@ -1,0 +1,96 @@
+{% extends "title_base.html"  %}
+{% block title  %}
+{% load static %}
+<link type="image/x-icon" rel="shortcut icon" href="{% static "favicon.ico" %}">
+<link type="text/css" rel="stylesheet" href="{% static "css/common.css" %}">
+<link type="text/css" rel="stylesheet" href="{% static "css/user.css" %}">
+</head>
+
+<body class="member">
+    <div class="header">
+        <a href="/" class="logo" title="Index"><img src="{% static "image/logo.png" %}"></a>
+        <div class="search-box">
+         <h2> Stock manageSystem</h2>
+        </div>
+    </div><!--end header-->
+
+	<div class="nav-box">
+		<div class="nav-box-inner">
+			<ul class="nav clearfix">
+				<li><a href="/admin">Stock</a></li>
+				<li><a href="{% url 'home' 1 %}" target="_blank">Statistic</a></li>
+	    	    <li><a href="{% url 'orderbyuser'  %}" target="_blank">User stat</a></li>
+			</ul>
+		</div>
+	</div><!--end nav-box-->
+
+    <div class="mod_profile js_user_data" style="">
+        <div class="section_inner">
+            <div class="profile__cover_link">
+                <img src="{% static "image/user.jpg" %}" class="profile__cover">
+            </div>
+            <h1 class="profile__tit">
+                <span class="profile__name">{{ user.username }}</span>
+            </h1>
+                <a href="{% url 'logout' %}" style="color:white;">Log Out</a>
+        </div>
+    </div>
+
+	<div class="main main--profile" style="">
+        <div class="mod_tab profile_nav" role="nav" id="nav">
+            <span class="mod_tab__item mod_tab__current" id="hear_tab">Order History by User</span>
+        </div>
+		<div class="js_box" style="display: block;">
+			<div class="profile_cont">
+				<div class="js_sub" style="display: block;">
+					<div class="mod_booklist">
+						<ul class="booklist__header">
+							<li class="booklist__header_name"># Title</li>
+			            <li class="booklist__bookname">Username</li>
+						<li class="booklist__artist">Full name</li>
+						<li class="booklist__artist">Created time</li>
+                            <a href="{% url 'orderbyusercomment'  %}" target="_blank" class="booklist__artist">Score</a>
+						</ul>
+						<ul class="booklist__list">
+                            {% for item in object_list %}
+				<li>
+				   <div class="booklist__item booklist__item--even">
+				        <div class="booklist__bookname">{{forloop.counter}}</div>
+				        <div class="booklist__bookname">{{ item.username }}</div>
+			            <div class="booklist__artist">{{ item.first_name }}&nbsp{{ item.last_name }}</div>
+ 			            <div class="booklist__artist">{{ item.date_joined }}</div>
+ 			            <div class="booklist__artist">{{ item.scoregap }}</div>
+				    </div>
+				</li>
+                            {% endfor %}
+						</ul>
+					</div><!--end mod_booklist-->
+
+                    <!--分页-->
+					<div class="page-box">
+						<div class="pagebar" id="pageBar">
+
+                            {% if contacts.has_previous %}
+                            <a href="{% url 'home' contacts.previous_page_number %}" class="prev" target="_self"><i></i>上一页</a>
+                            {% endif %}
+
+                            {% for page in contacts.paginator.page_range %}
+                                {% if contacts.number == page %}
+                                    <span class="sel">{{ page }}</span>
+                                {% else %}
+                                    <a href="{% url 'home' page %}" target="_self">{{ page }}</a>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if contacts.has_next %}
+                            <a href="{% url 'home' contacts.next_page_number %}" class="next" target="_self">下一页<i></i></a>
+                            {% endif %}
+
+                        </div>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div><!-- end main -->
+
+{% endblock  %}

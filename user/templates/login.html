@@ -1,0 +1,84 @@
+{% extends "title_base.html"  %}
+{% block title  %}
+{% load static %}
+<link type="image/x-icon" rel="shortcut icon" href="{% static "favicon.ico" %}">
+<link type="text/css" rel="stylesheet" href="{% static "css/common.css" %}">
+<link type="text/css" rel="stylesheet" href="{% static "css/register.css" %}">
+</head>
+
+<body class="review">
+<div class="wrapper">
+    <div class="header clearfix">
+        <a href="/" class="logo">book store</a>
+        <span class="logo-tip">Hi,Welcome to bookstore</span>
+    </div>
+
+    <div class="content clearfix">
+        <!-- 登录注册版块 -->
+        <div id="unauth_main" class="login-regist">
+            <div class="login-box switch_box" style="display:block;">
+                <div class="title">login in</div>
+                <form id="loginForm" class="formBox" action="" method="post">
+                    {% csrf_token %}
+                    <div class="itembox user-name">
+                        <div class="item">
+                            <input type="text" name="loginUser" placeholder="user" class="txt tabInput">
+                        </div>
+                    </div>
+                    <div class="itembox user-pwd">
+                        <div class="item">
+                            <input type="password" name="password" placeholder="password" class="txt tabInput">
+                        </div>
+                    </div>
+                    {% if tips %}
+                        <div>Hint :<span>{{ tips }}</span></div>
+                    {% endif %}
+                    <div id="loginBtnBox" class="login-btn">
+                        <input id="J_LoginButton" type="submit" value="Log In" class="tabInput pass-btn" />
+                    </div>
+                    <div class="pass-reglink">Do not have an account？<a class="switch" href="javascript:;">Sign up</a></div>
+                </form>
+            </div>
+            <!-- //登录版块end -->
+            <div class="regist-box switch_box" style="display:none;">
+                <div class="title">Sign up</div>
+                <form id="registerForm" class="formBox" method="post" action="">
+                    {% csrf_token %}
+                    <div id="registForm" class="formBox">
+                    <div class="itembox user-name">
+                    <div class="item">
+                        {{ user.username }}
+                    </div>
+                    </div>
+                    <div class="itembox user-name">
+                    <div class="item">
+                        {{ user.mobile }}
+                    </div>
+                    </div>
+                    <div class="itembox user-pwd">
+                    <div class="item">
+                        {{ user.password1 }}
+                    </div>
+                    </div>
+                    <div class="itembox user-pwd">
+                    <div class="item">
+                        {{ user.password2 }}
+                    </div>
+                    </div>
+                    {% if tips %}
+                        <div>Tips:<span>{{ tips }}</span></div>
+                    {% endif %}
+                    <div class="member-pass clearfix">
+                        <input id="agree" name="agree" checked="checked" type="checkbox" value="1"><label for="agree" class="autologon">Acknowledge the Term and Service</label>
+                    </div>
+                        <input type="submit" value="Free sign up" id="J_RegButton" class="pass-btn tabInput"/>
+                        <div class="pass-reglink">Already have an account，<a class="switch" href="javascript:;">Log in Now!</a></div>
+                    </div>
+                </form>
+            </div>
+            <!-- //注册版块end -->
+        </div>
+    </div>
+</div>
+<script data-main="{% static "js/register.js" %}" src="{% static "js/require.js" %}"></script>
+{% endblock  %}
